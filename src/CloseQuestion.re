@@ -1,7 +1,4 @@
 open Belt;
-open Survey;
-
-let deleteAnswer = () => ();
 
 [@react.component]
 let make =
@@ -10,34 +7,43 @@ let make =
       ~onChange,
       ~onDelete,
       ~onAddAnswer,
-      ~answers: array(Answer.t),
+      ~answers: array(Survey.Answer.t),
       ~onDeleteAnswer,
       ~onChangeAnswer,
+      ~index,
     ) =>
   <Animation.Div
-    exit={"opacity": 0.0} initial={"opacity": 0.0} animate={"opacity": 1.0}>
-    <Input onChange value />
-    <span onClick={_ => onDelete()}> <Text> {j|❌|j} </Text> </span>
-    <Animation.Ul>
+    exit={"opacity": 0.0}
+    initial={"opacity": 0.0}
+    animate={"opacity": 1.0}
+    className=TW.([Display(Flex), AlignItems(ItemsStart)]->make)>
+    <Question index>
+      <DeletedInput onChange value onDelete />
       <Animation.Presence>
-        {answers
-         ->Array.map(a =>
-             <Animation.Li
-               key={a.id}
-               exit={"opacity": 0.0}
-               initial={"opacity": 0.0}
-               animate={"opacity": 1.0}>
-               <DeletedInput
-                 value={a.value}
-                 onChange={v => onChangeAnswer(a.id, v)}
-                 onDelete={_ => onDeleteAnswer(a.id)}
-               />
-             </Animation.Li>
-           )
-         ->React.array}
+        <Animation.Ul className=TW.([Margin(Ml16)]->make)>
+          {answers
+           ->Array.mapWithIndex((index, a) =>
+               <Animation.Li
+                 key={a.id}
+                 exit={"opacity": 0.0}
+                 initial={"opacity": 0.0}
+                 animate={"opacity": 1.0}
+                 className=TW.(
+                   [Display(Flex), AlignItems(ItemsCenter)]->make
+                 )>
+                 <Title index size=`small />
+                 <DeletedInput
+                   value={a.value}
+                   onChange={v => onChangeAnswer(a.id, v)}
+                   onDelete={_ => onDeleteAnswer(a.id)}
+                 />
+               </Animation.Li>
+             )
+           ->React.array}
+        </Animation.Ul>
       </Animation.Presence>
-    </Animation.Ul>
-    <button onClick={_ => onAddAnswer()}>
+    </Question>
+    <Button onClick={_ => onAddAnswer()}>
       <Text> {j|Dodaj odpowiedź|j} </Text>
-    </button>
+    </Button>
   </Animation.Div>;

@@ -19,7 +19,8 @@ module Div = {
       ~children: React.element,
       ~exit: props=?,
       ~initial: props=?,
-      ~animate: props=?
+      ~animate: props=?,
+      ~className: string=?
     ) =>
     React.element =
     "div";
@@ -32,7 +33,8 @@ module Ul = {
       ~children: React.element,
       ~exit: props=?,
       ~initial: props=?,
-      ~animate: props=?
+      ~animate: props=?,
+      ~className: string=?
     ) =>
     React.element =
     "ul";
@@ -45,7 +47,8 @@ module Li = {
       ~children: React.element,
       ~exit: props=?,
       ~initial: props=?,
-      ~animate: props=?
+      ~animate: props=?,
+      ~className: string=?
     ) =>
     React.element =
     "li";
