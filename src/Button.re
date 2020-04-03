@@ -1,6 +1,7 @@
 open TW;
 
 let style = ReactDOMRe.Style.make(~transition="0.2s all", ());
+
 [@react.component]
 let make = (~onClick, ~children, ~type_=`primary) => {
   let styles =
@@ -12,6 +13,7 @@ let make = (~onClick, ~children, ~type_=`primary) => {
         BackgroundColor(HoverBgBlue800),
         Padding(Px4),
         Padding(Py3),
+        TextColor(TextWhite),
       ]
     | `rounded => [
         BackgroundColor(BgRed600),
@@ -24,6 +26,7 @@ let make = (~onClick, ~children, ~type_=`primary) => {
         AlignItems(ItemsCenter),
         JustifyContent(JustifyCenter),
         Padding(P0),
+        TextColor(TextWhite),
       ]
     };
   <button

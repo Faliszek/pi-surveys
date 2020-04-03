@@ -1,3 +1,5 @@
 [@react.component]
-let make = (~value, ~onChange, ~onDelete, ~index) =>
-  <Question index> <DeletedInput value onChange onDelete /> </Question>;
+let make = (~value, ~onChange, ~onDelete, ~index, ~placeholder) =>
+  <Question index>
+    <DeletedInput value onChange onDelete placeholder />
+  </Question>;

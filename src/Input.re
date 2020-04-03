@@ -1,13 +1,41 @@
 open TW;
 open Belt;
 
+module Textarea = {
+  [@react.component]
+  let make = (~value, ~onChange, ~className=?) => {
+    let className = className->Option.getWithDefault([]);
+
+    <textarea
+      type_="text"
+      value
+      onChange={e => e->ReactEvent.Synthetic.target##value->onChange}
+      className={
+        [
+          BorderRadius(RoundedLg),
+          BorderWidth(Border),
+          BorderColor(BorderGray300),
+          Padding(Px4),
+          Padding(Py1),
+          Margin(M1),
+          BoxShadow(ShadowMd),
+          Height(H10),
+        ]
+        ->List.concat(className)
+        ->make
+      }
+    />;
+  };
+};
+
 [@react.component]
-let make = (~value, ~onChange, ~className=?) => {
+let make = (~value, ~placeholder=?, ~onChange, ~className=?) => {
   let className = className->Option.getWithDefault([]);
 
   <input
     type_="text"
     value
+    ?placeholder
     onChange={e => e->ReactEvent.Synthetic.target##value->onChange}
     className={
       [
@@ -15,8 +43,6 @@ let make = (~value, ~onChange, ~className=?) => {
         BorderWidth(Border),
         BorderColor(BorderGray300),
         Padding(Px4),
-        Padding(Py1),
-        Margin(M1),
         BoxShadow(ShadowMd),
         Height(H10),
       ]

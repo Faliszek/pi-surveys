@@ -19,7 +19,19 @@ module Answer = {
     isCorrect: bool,
   };
 
-  let make = () => {id: makeId(), value: "", isCorrect: false};
+  let rates = [|
+    {j|5) Bardzo dobrze|j},
+    {j|4) Dobrze|j},
+    {j|3) Umiarkowanie|j},
+    {j|2) Źle|j},
+    {j|1) Bardzo źle|j},
+  |];
+
+  let make = (~value=?, ()) => {
+    id: makeId(),
+    value: value->Option.getWithDefault(""),
+    isCorrect: false,
+  };
 
   let add = answers => answers->Array.concat([|make()|]);
 
@@ -33,21 +45,36 @@ module Answer = {
 module Question = {
   type type_ =
     | Open
-    | Closed(array(Answer.t));
+    | Closed(array(Answer.t))
+    | Rate(array(Answer.t));
 
   type t = {
     id: string,
     value: string,
+    placeholder: string,
     type_,
   };
 
   let make = type_ =>
     switch (type_) {
-    | Open => {id: makeId(), value: "", type_}
+    | Open => {
+        id: makeId(),
+        value: "",
+        placeholder: {j|Miejsce na dodatkowe uwagi?|j},
+        type_,
+      }
     | Closed(_) => {
         id: makeId(),
         value: "",
+        placeholder: {j|Pytanie jednokrotnego wyboru|j},
         type_: Closed([|Answer.make()|]),
+      }
+
+    | Rate(_) => {
+        id: makeId(),
+        value: "",
+        placeholder: {j|Pytanie o ocenę|j},
+        type_: Rate(Answer.rates->Array.map(v => Answer.make(~value=v, ()))),
       }
     };
 
@@ -56,7 +83,7 @@ module Question = {
   let addAnswer = (questions, questionId) =>
     questions->Array.map(q =>
       switch (q.type_, q.id === questionId) {
-      | (Closed(answers), true) => {
+      | (Closed(answers) | Rate(answers), true) => {
           ...q,
           type_: Closed(answers->Answer.add),
         }
@@ -67,10 +94,11 @@ module Question = {
   let changeAnswer = (~questions, ~questionId, ~answerId, ~value) =>
     questions->Array.map(q =>
       switch (q.type_, questionId === q.id) {
-      | (Closed(answers), true) => {
+      | (Closed(answers) | Rate(answers), true) => {
           ...q,
           type_: Closed(Answer.change(~answers, ~answerId, ~value)),
         }
+
       | (_, _) => q
       }
     );
@@ -79,7 +107,7 @@ module Question = {
     questions
     ->Array.map(q =>
         switch (q.type_, q.id === questionId) {
-        | (Closed(answers), true) => {
+        | (Closed(answers) | Rate(answers), true) => {
             ...q,
             type_: Closed(Answer.remove(answerId, answers)),
           }

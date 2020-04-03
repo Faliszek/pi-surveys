@@ -10,6 +10,7 @@ let make =
       ~answers: array(Survey.Answer.t),
       ~onDeleteAnswer,
       ~onChangeAnswer,
+      ~placeholder,
       ~index,
     ) =>
   <Animation.Div
@@ -18,9 +19,9 @@ let make =
     animate={"opacity": 1.0}
     className=TW.([Display(Flex), AlignItems(ItemsStart)]->make)>
     <Question index>
-      <DeletedInput onChange value onDelete />
-      <Animation.Presence>
-        <Animation.Ul className=TW.([Margin(Ml16)]->make)>
+      <DeletedInput onChange value onDelete placeholder />
+      <Animation.Ul className=TW.([Margin(Ml16)]->make)>
+        <Animation.Presence>
           {answers
            ->Array.mapWithIndex((index, a) =>
                <Animation.Li
@@ -36,14 +37,15 @@ let make =
                    value={a.value}
                    onChange={v => onChangeAnswer(a.id, v)}
                    onDelete={_ => onDeleteAnswer(a.id)}
+                   placeholder={j|Wprowadź odpowiedź|j}
                  />
                </Animation.Li>
              )
            ->React.array}
-        </Animation.Ul>
-      </Animation.Presence>
+        </Animation.Presence>
+      </Animation.Ul>
     </Question>
     <Button onClick={_ => onAddAnswer()}>
-      <Text> {j|Dodaj odpowiedź|j} </Text>
+      <Text color=`white> {j|Dodaj odpowiedź|j} </Text>
     </Button>
   </Animation.Div>;
