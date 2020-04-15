@@ -29,9 +29,7 @@ let useEdit = () => {
 module Delete = [%graphql
   {|
     mutation SurveyDelete($id: ID!) {
-      updateForm(id: $id) {
-        _id
-      }
+      deleteForm(id: $id)
     }
   |}
 ];

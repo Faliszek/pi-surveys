@@ -61,6 +61,8 @@ let make = () => {
              }
            );
 
+       let formsLength = forms->Array.length === 0 ? 1 : forms->Array.length;
+
        let total = data##forms##totalForms;
 
        <div>
@@ -108,7 +110,7 @@ let make = () => {
            </tbody>
          </table>
          <div className={[Display(Flex), JustifyContent(JustifyEnd)]->make}>
-           {Array.range(1, total / forms->Array.length)
+           {Array.range(1, total / formsLength)
             ->Array.map(v =>
                 <div
                   className={
