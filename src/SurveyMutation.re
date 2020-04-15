@@ -25,3 +25,17 @@ module Edit = [%graphql
 let useEdit = () => {
   ReasonUrql.Hooks.useDynamicMutation(Edit.definition);
 };
+
+module Delete = [%graphql
+  {|
+    mutation SurveyDelete($id: ID!) {
+      updateForm(id: $id) {
+        _id
+      }
+    }
+  |}
+];
+
+let useRemove = () => {
+  ReasonUrql.Hooks.useDynamicMutation(Delete.definition);
+};

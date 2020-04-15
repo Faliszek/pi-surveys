@@ -87,3 +87,4 @@ input UserInputData {
   name: String!
   password: String!
 }
+

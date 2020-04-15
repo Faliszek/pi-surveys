@@ -31,6 +31,19 @@ let td = w =>
   ]
   ->make;
 
+module Delete = {
+  [@react.component]
+  let make = (~id) => {
+    let (remove, executeRemove) = SurveyMutation.useRemove();
+    <Button
+      type_=`danger
+      loading={remove.fetching}
+      onClick={_ => executeRemove(~id, ()) |> ignore}>
+      <Text color=`white> {j|Usuń|j} </Text>
+    </Button>;
+  };
+};
+
 [@react.component]
 let make = () => {
   let (page, setPage) = React.useState(_ => 1);
@@ -73,29 +86,46 @@ let make = () => {
                <Text> {j|Ostatnia modyfikacja|j} </Text>
              </th>
              <th className={th()}> <Text> {j|Autor|j} </Text> </th>
+             <th className={th()}> <Text> {j|Akcje|j} </Text> </th>
            </thead>
            <tbody>
              {forms
               ->Belt.Array.map(s =>
-                  <tr
-                    className={[Cursor(CursorPointer)]->make}
-                    onClick={_ => {
-                      let id = s##_id;
-                      ReasonReactRouter.push({j|/surveys/$id|j});
-                    }}>
+                  <tr className={[Cursor(CursorPointer)]->make}>
                     <td className={td(W1_6)}> <Text> {s##_id} </Text> </td>
-                    <td className={td(W1_6)}> <Text> {s##title} </Text> </td>
-                    <td className={td(W1_6)}>
+                    <td className={td(W1_12)}> <Text> {s##title} </Text> </td>
+                    <td className={td(W1_12)}>
                       <Text> {s##content} </Text>
                     </td>
-                    <td className={td(W3_12)}>
+                    <td className={td(W1_12)}>
                       <Text> {s##createdAt->formatDate} </Text>
                     </td>
-                    <td className={td(W3_12)}>
+                    <td className={td(W1_12)}>
                       <Text> {s##updatedAt->formatDate} </Text>
                     </td>
-                    <td className={td(W2_12)}>
+                    <td className={td(W1_12)}>
                       <Text> {s##creator##name} </Text>
+                    </td>
+                    <td className={td(W1_12)}>
+                      <div
+                        className={
+                          [
+                            Display(Flex),
+                            JustifyContent(JustifyBetween),
+                            AlignItems(ItemsCenter),
+                          ]
+                          ->make
+                        }>
+                        <Text
+                          color=`blue
+                          onClick={_ => {
+                            let id = s##_id;
+                            ReasonReactRouter.push({j|/surveys/$id|j});
+                          }}>
+                          {j|Szczegóły|j}
+                        </Text>
+                        <Delete id=s##_id />
+                      </div>
                     </td>
                   </tr>
                 )
@@ -116,13 +146,17 @@ let make = () => {
                       AlignItems(ItemsCenter),
                       JustifyContent(JustifyCenter),
                       Margin(M1),
-                      BackgroundColor(BgGray100),
+                      v == page
+                        ? BackgroundColor(BgBlue100)
+                        : BackgroundColor(BgGray100),
                       Cursor(CursorPointer),
                     ]
                     ->make
                   }
                   onClick={_ => setPage(_ => v)}>
-                  <Text> v->Js.Int.toString </Text>
+                  <Text color={page === v ? `blue : `gray}>
+                    v->Js.Int.toString
+                  </Text>
                 </div>
               )
             ->React.array}

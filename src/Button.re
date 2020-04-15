@@ -15,6 +15,16 @@ let make = (~onClick, ~children, ~type_=`primary, ~loading=false) => {
         Padding(Py3),
         TextColor(TextWhite),
       ]
+
+    | `danger => [
+        BorderRadius(RoundedLg),
+        BackgroundColor(BgRed600),
+        TextColor(TextWhite),
+        BackgroundColor(HoverBgRed800),
+        Padding(Px4),
+        Padding(Py3),
+        TextColor(TextWhite),
+      ]
     | `rounded => [
         BackgroundColor(BgRed600),
         Width(W8),
