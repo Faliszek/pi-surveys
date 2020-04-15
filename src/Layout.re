@@ -4,10 +4,14 @@ let logo: string = [%bs.raw {|require('./assets/logo.png')|}];
 
 module MenuItem = {
   [@react.component]
-  let make = (~icon, ~text) => {
+  let make = (~icon, ~text, ~onClick) => {
+    let url = ReasonReactRouter.useUrl();
+
     let active =
-      switch (icon) {
-      | `survey => true
+      switch (url.path, icon) {
+      | ([] | ["surveys"] | ["create-survey"] | ["surveys", _], `survey) =>
+        true
+      | (["results"], `result) => true
       | _ => false
       };
 
@@ -25,7 +29,7 @@ module MenuItem = {
       | `result => <Icons.Results color=iconColor />
       | `survey => <Icons.FileText color=iconColor />
       };
-    <li>
+    <li onClick={_ => onClick()}>
       <a
         className={
           [
@@ -45,6 +49,23 @@ module MenuItem = {
         </Text>
       </a>
     </li>;
+  };
+};
+
+module SignOut = {
+  [@react.component]
+  let make = () => {
+    let {setToken}: AuthContext.t = Auth.use();
+
+    <div
+      onClick={_ => setToken(None)}
+      className={
+        [Display(Flex), AlignItems(ItemsCenter), Cursor(CursorPointer)]
+        ->make
+      }>
+      <Text className=[Margin(Mr2)]> {j|Wyloguj się|j} </Text>
+      <Icons.LogOut color="#718096" />
+    </div>;
   };
 };
 
@@ -77,17 +98,27 @@ let make = (~children) =>
       }>
       <div
         className={
-          [Margin(Ml4), Display(Flex), AlignItems(ItemsCenter)]->make
+          [
+            Display(Flex),
+            JustifyContent(JustifyBetween),
+            Width(WFull),
+            Margin(Mx4),
+            AlignItems(ItemsCenter),
+          ]
+          ->make
         }>
-        <img src=logo className={[Width(W12), Height(H12)]->make} />
-        <Text
-          className=[
-            FontSize(TextXl),
-            TextColor(TextWhite),
-            FontWeight(FontSemibold),
-          ]>
-          "UP Ankiety"
-        </Text>
+        <div className={[Display(Flex), AlignItems(ItemsCenter)]->make}>
+          <img src=logo className={[Width(W12), Height(H12)]->make} />
+          <Text
+            className=[
+              FontSize(TextXl),
+              TextColor(TextWhite),
+              FontWeight(FontSemibold),
+            ]>
+            "UP Ankiety"
+          </Text>
+        </div>
+        <SignOut />
       </div>
     </div>
     <main className={[Width(WFull), Flex(Flex1), Display(Flex)]->make}>
@@ -102,8 +133,16 @@ let make = (~children) =>
           ->make
         }>
         <ul>
-          <MenuItem icon=`survey text="Ankiety" />
-          <MenuItem icon=`result text="Wyniki" />
+          <MenuItem
+            onClick={_ => ReasonReactRouter.push("/surveys")}
+            icon=`survey
+            text="Ankiety"
+          />
+          <MenuItem
+            onClick={_ => ReasonReactRouter.push("/results")}
+            icon=`result
+            text="Wyniki"
+          />
         </ul>
       </nav>
       <div className={[Width(WFull)]->make}>

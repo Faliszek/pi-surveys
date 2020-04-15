@@ -29,11 +29,11 @@ module Textarea = {
 };
 
 [@react.component]
-let make = (~value, ~placeholder=?, ~onChange, ~className=?) => {
+let make = (~value, ~placeholder=?, ~onChange, ~className=?, ~htmlType="text") => {
   let className = className->Option.getWithDefault([]);
 
   <input
-    type_="text"
+    type_=htmlType
     value
     ?placeholder
     onChange={e => e->ReactEvent.Synthetic.target##value->onChange}

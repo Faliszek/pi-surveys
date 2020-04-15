@@ -6,3 +6,4 @@ lib
 node_modules
 *.bs.js
 .DS_Store
+.graphql_ppx_cache

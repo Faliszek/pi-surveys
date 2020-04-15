@@ -3,7 +3,7 @@ open TW;
 let style = ReactDOMRe.Style.make(~transition="0.2s all", ());
 
 [@react.component]
-let make = (~onClick, ~children, ~type_=`primary) => {
+let make = (~onClick, ~children, ~type_=`primary, ~loading=false) => {
   let styles =
     switch (type_) {
     | `primary => [
@@ -42,6 +42,6 @@ let make = (~onClick, ~children, ~type_=`primary) => {
       ]
       ->make
     }>
-    children
+    {loading ? <Text> {j|Proszę czekać|j} </Text> : children}
   </button>;
 };

@@ -16,7 +16,6 @@ module Answer = {
   type t = {
     id: string,
     value: string,
-    isCorrect: bool,
   };
 
   let rates = [|
@@ -30,7 +29,6 @@ module Answer = {
   let make = (~value=?, ()) => {
     id: makeId(),
     value: value->Option.getWithDefault(""),
-    isCorrect: false,
   };
 
   let add = answers => answers->Array.concat([|make()|]);
@@ -55,25 +53,25 @@ module Question = {
     type_,
   };
 
+  let openPlaceholder = {j|Miejsce na dodatkowe uwagi?|j};
+
+  let closedPlaceholder = {j|Pytanie jednokrotnego wyboru|j};
+
+  let ratePlaceholder = {j|Pytanie o ocenę|j};
   let make = type_ =>
     switch (type_) {
-    | Open => {
-        id: makeId(),
-        value: "",
-        placeholder: {j|Miejsce na dodatkowe uwagi?|j},
-        type_,
-      }
+    | Open => {id: makeId(), value: "", placeholder: openPlaceholder, type_}
     | Closed(_) => {
         id: makeId(),
         value: "",
-        placeholder: {j|Pytanie jednokrotnego wyboru|j},
+        placeholder: closedPlaceholder,
         type_: Closed([|Answer.make()|]),
       }
 
     | Rate(_) => {
         id: makeId(),
         value: "",
-        placeholder: {j|Pytanie o ocenę|j},
+        placeholder: ratePlaceholder,
         type_: Rate(Answer.rates->Array.map(v => Answer.make(~value=v, ()))),
       }
     };

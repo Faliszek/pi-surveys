@@ -6,19 +6,26 @@
   "license": "MIT",
   "private": false,
   "devDependencies": {
+    "@baransu/graphql_ppx_re": "^0.7.1",
     "bs-platform": "^7.2.2",
     "parcel-bundler": "^1.12.4"
   },
   "dependencies": {
+    "bs-fetch": "^0.5.2",
+    "bs-webapi": "^0.15.9",
     "framer-motion": "^1.10.3",
     "re-tailwind": "^0.0.9",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-feather": "^2.0.3",
-    "reason-react": "^0.7.0"
+    "reason-promise": "^1.0.2",
+    "reason-react": "^0.7.0",
+    "reason-urql": "^1.6.0"
   },
   "scripts": {
     "compile": "bsb -make-world -w",
-    "start": "parcel index.html"
+    "start": "parcel index.html",
+    "get-schema": "npx get-graphql-schema http://localhost:3000/graphql -j > graphql_schema.json",
+    "get-schema1": "npx get-graphql-schema http://localhost:3000/graphql > schema.graphql"
   }
 }

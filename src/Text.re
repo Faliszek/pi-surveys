@@ -7,6 +7,7 @@ let make = (~children, ~className=?, ~color=`gray) => {
     switch (color) {
     | `gray => TextColor(TextGray600)
     | `white => TextColor(TextWhite)
+    | `red => TextColor(TextRed600)
     };
 
   <span className={[color, ...className]->TW.make}>

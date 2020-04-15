@@ -17,3 +17,8 @@ module Circle = {
   [@react.component] [@bs.module "react-feather"]
   external make: (~color: string=?) => React.element = "Circle";
 };
+
+module LogOut = {
+  [@react.component] [@bs.module "react-feather"]
+  external make: (~color: string=?) => React.element = "LogOut";
+};

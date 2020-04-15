@@ -3,6 +3,7 @@
 - Utworzenie repozytorium z kodem źródłowym części serwerowej aplikacji - _(Dawid Kwiatoń)_
 
 - Utworzenie repozytorium z kodem źródłowym części klienckiej aplikacji - _(Paweł Falisz)_
+
 - Rozplanowanie pracy, podział obowiązków oraz utworzenie planu przebiegu implementacji projektu w postaci pliku README.md - _(Paweł Falisz)_
 
 - Konfiguracja projektu frontendowego, oraz implementacja podstawowych komponentów - _(Paweł Falisz)_

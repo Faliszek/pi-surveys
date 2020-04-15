@@ -12,10 +12,18 @@
     "in-source": true
   },
   "suffix": ".bs.js",
-  "bs-dependencies": ["reason-react", "re-tailwind"],
+  "bs-dependencies": [
+    "bs-fetch",
+    "bs-webapi",
+    "reason-react",
+    "re-tailwind",
+    "reason-urql",
+    "reason-promise"
+  ],
   "warnings": {
     "error": "+101"
   },
+  "ppx-flags": ["@baransu/graphql_ppx_re/ppx"],
   "namespace": true,
   "refmt": 3
 }

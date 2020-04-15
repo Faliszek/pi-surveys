@@ -1,0 +1,89 @@
+schema {
+  query: RootQuery
+  mutation: RootMutation
+}
+
+type Answer {
+  id: String
+  answer: String
+}
+
+type AuthData {
+  token: String!
+  userId: String!
+}
+
+type Form {
+  _id: ID!
+  title: String!
+  content: String!
+  creator: User!
+  createdAt: String!
+  updatedAt: String!
+  questions: [Question!]!
+}
+
+type FormData {
+  forms: [Form!]!
+  totalForms: Int!
+}
+
+input FormInputData {
+  title: String!
+  content: String!
+  questions: [QuestionInput]
+}
+
+type Question {
+  _id: ID!
+  question: String!
+  type: String!
+  answers: [Answer]
+}
+
+input QuestionAnswer {
+  id: String
+  answer: String
+}
+
+input QuestionInput {
+  question: String!
+  formType: String!
+  answers: [QuestionAnswer]
+}
+
+type RootMutation {
+  createUser(userInput: UserInputData): User!
+  createForm(formInput: FormInputData): Form!
+  updateForm(id: ID!, formInput: FormInputData): Form!
+  deleteForm(id: ID!): Boolean
+  updateStatus(status: String!): User!
+}
+
+type RootQuery {
+  login(email: String!, password: String!): AuthData!
+  forms(page: Int): FormData!
+  form(id: ID!): Form!
+  user: User!
+  users: UserData!
+}
+
+type User {
+  _id: ID!
+  name: String!
+  email: String!
+  password: String
+  status: String!
+  forms: [Form!]!
+}
+
+type UserData {
+  users: [User!]!
+  totalUsers: Int
+}
+
+input UserInputData {
+  email: String!
+  name: String!
+  password: String!
+}
