@@ -6,6 +6,7 @@ let makeClient = (~token) =>
   switch (token) {
   | Some(token) =>
     ReasonUrql.Client.make(
+      ~requestPolicy=`NetworkOnly,
       ~fetchOptions=
         UrqlClient.FetchOpts(
           Fetch.RequestInit.make(
