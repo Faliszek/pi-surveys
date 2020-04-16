@@ -40,17 +40,19 @@ module App = {
       [|token|],
     );
 
+    Js.log2("URL", url.path);
+
     Js.log(token);
 
     <ReasonUrql.Provider value=client>
       {switch (Option.isSome(token), url.path) {
-       | (true, ["create-survey"]) => <SurveyCreate />
-       | (true, ["surveys"])
-       | (true, []) => <SurveyListView />
-       | (true, ["surveys", id]) => <SurveySingleView id />
+       | (false, ["login"]) => <LoginView />
+       | (_, ["create-survey"]) => <SurveyCreate />
+       | (_, ["surveys", id]) => <SurveySingleView id />
+       | (_, ["surveys"])
+       | (_, []) => <SurveyListView />
 
        | (true, ["results"]) => <ResultsListView />
-       | (false, ["login"]) => <LoginView />
        | _ => React.null
        }}
     </ReasonUrql.Provider>;

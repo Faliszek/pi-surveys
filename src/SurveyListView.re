@@ -33,12 +33,19 @@ let td = w =>
 
 module Delete = {
   [@react.component]
-  let make = (~id) => {
+  let make = (~id, ~refetch) => {
     let (remove, executeRemove) = SurveyMutation.useRemove();
     <Button
       type_=`danger
       loading={remove.fetching}
-      onClick={_ => executeRemove(~id, ()) |> ignore}>
+      onClick={_ =>
+        executeRemove(~id, ())
+        |> Js.Promise.then_(_ => {
+             refetch() |> ignore;
+             Js.Promise.resolve();
+           })
+        |> ignore
+      }>
       <Text color=`white> {j|Usuń|j} </Text>
     </Button>;
   };
@@ -47,7 +54,7 @@ module Delete = {
 [@react.component]
 let make = () => {
   let (page, setPage) = React.useState(_ => 1);
-  let (surveys, _) = SurveyListQuery.use(~page);
+  let (surveys, executeQuery) = SurveyListQuery.use(~page);
 
   <Layout>
     <div className={[Display(Flex), JustifyContent(JustifyBetween)]->make}>
@@ -124,7 +131,7 @@ let make = () => {
                           }}>
                           {j|Szczegóły|j}
                         </Text>
-                        <Delete id=s##_id />
+                        <Delete id=s##_id refetch={() => executeQuery()} />
                       </div>
                     </td>
                   </tr>

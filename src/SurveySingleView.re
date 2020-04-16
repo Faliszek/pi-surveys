@@ -13,6 +13,8 @@ let make = (~id) => {
 
   let (desc, setDesc) = React.useState(() => "");
 
+  let notification = Notification.use();
+
   React.useEffect1(
     () => {
       switch (data.data) {
@@ -44,6 +46,10 @@ let make = (~id) => {
             },
             (),
           )
+          |> Js.Promise.then_(_ => {
+               notification.success("Sukces");
+               Js.Promise.resolve();
+             })
           |> ignore
         }>
         <Text color=`white> {j|Zapisz zmiany|j} </Text>

@@ -74,8 +74,8 @@ let fromQuestion: 'a => Question.t =
   q => {
     id: q##_id,
     value: q##question,
-    type_: fromType(q##type_, q##answers),
-    placeholder: q##type_->fromPlaceholder,
+    type_: fromType(q##formType, q##answers),
+    placeholder: q##formType->fromPlaceholder,
   };
 
 let fromQuestions = questions => questions->Array.map(fromQuestion);

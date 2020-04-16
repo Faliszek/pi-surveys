@@ -925,7 +925,7 @@
             "deprecationReason": null
           },
           {
-            "name": "type",
+            "name": "formType",
             "description": null,
             "args": [],
             "type": {

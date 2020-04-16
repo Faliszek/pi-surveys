@@ -52,6 +52,6 @@ let make = (~onClick, ~children, ~type_=`primary, ~loading=false) => {
       ]
       ->make
     }>
-    {loading ? <Text> {j|Proszę czekać|j} </Text> : children}
+    {loading ? <Loader /> : children}
   </button>;
 };

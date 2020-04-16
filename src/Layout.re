@@ -58,7 +58,10 @@ module SignOut = {
     let {setToken}: AuthContext.t = Auth.use();
 
     <div
-      onClick={_ => setToken(None)}
+      onClick={_ => {
+        setToken(None);
+        ReasonReactRouter.push("/login");
+      }}
       className={
         [Display(Flex), AlignItems(ItemsCenter), Cursor(CursorPointer)]
         ->make

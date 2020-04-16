@@ -10,7 +10,7 @@ module Single = [%graphql
         questions {
             _id
             question
-            type_: type
+            formType
             answers {
                 id
                 answer
