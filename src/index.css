@@ -4,12 +4,13 @@
 }
 
 .loader {
-  border: 4 solid #f3f3f3; /* Light grey */
-  border-top: 4 solid #3498db; /* Blue */
+  border: 4px solid #f3f3f3; /* Light grey */
+  border-top: 4px solid #3498db; /* Blue */
   border-radius: 50%;
-  width: 16px;
-  height: 16px;
+  width: 32px;
+  height: 32px;
   animation: spin 2s linear infinite;
+  display: block;
 }
 
 @keyframes spin {

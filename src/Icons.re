@@ -13,6 +13,11 @@ module CheckCircle = {
   external make: (~color: string=?) => React.element = "CheckCircle";
 };
 
+module XCircle = {
+  [@react.component] [@bs.module "react-feather"]
+  external make: (~color: string=?) => React.element = "XCircle";
+};
+
 module Circle = {
   [@react.component] [@bs.module "react-feather"]
   external make: (~color: string=?) => React.element = "Circle";

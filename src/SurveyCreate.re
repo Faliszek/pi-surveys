@@ -25,6 +25,7 @@ let make = () => {
             "title": name,
             "content": desc,
             "questions": SurveyForm.mapQuestions(questions),
+            "parentId": None,
           },
           (),
         )

@@ -10,7 +10,7 @@ module Single = [%graphql
         questions {
             _id
             question
-            formType
+            formType @bsDecoder(fn: "SurveyForm.fallbackToOpenType")
             answers {
                 id
                 answer

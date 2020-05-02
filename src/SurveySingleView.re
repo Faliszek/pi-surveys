@@ -1,19 +1,13 @@
 open TW;
-open Survey;
 
 [@react.component]
 let make = (~id) => {
-  Js.log(id);
-
   let (data, _) = SurveySingleQuery.use(~id);
   let (edit, editSurvey) = SurveyMutation.useEdit();
-  let (questions: array(Question.t), setQuestions) =
+  let (questions: array(Survey.Question.t), setQuestions) =
     React.useState(() => [||]);
   let (name, setName) = React.useState(() => "");
-
   let (desc, setDesc) = React.useState(() => "");
-
-  let notification = Notification.use();
 
   React.useEffect1(
     () => {
@@ -21,7 +15,7 @@ let make = (~id) => {
       | Some(data) =>
         let survey = data##form;
         setName(_ => survey##title);
-        setDesc(_ => survey##content);
+        setDesc(_ => survey##content->Belt.Option.getWithDefault(""));
         setQuestions(_ => SurveyForm.fromQuestions(survey##questions));
       | None => ()
       };
@@ -43,13 +37,11 @@ let make = (~id) => {
               "title": name,
               "content": desc,
               "questions": SurveyForm.mapQuestions(questions),
+              "parentId": None,
             },
             (),
           )
-          |> Js.Promise.then_(_ => {
-               notification.success("Sukces");
-               Js.Promise.resolve();
-             })
+          |> Js.Promise.then_(_ => {Js.Promise.resolve()})
           |> ignore
         }>
         <Text color=`white> {j|Zapisz zmiany|j} </Text>

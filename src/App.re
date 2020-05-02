@@ -34,15 +34,11 @@ module App = {
       () => {
         let client = makeClient(~token);
         setClient(_ => client);
-        Js.log2("update new client", client);
+        // Js.log2("update new client", client);
         None;
       },
       [|token|],
     );
-
-    Js.log2("URL", url.path);
-
-    Js.log(token);
 
     <ReasonUrql.Provider value=client>
       {switch (Option.isSome(token), url.path) {
@@ -62,8 +58,6 @@ module App = {
 [@react.component]
 let make = () => {
   <Auth.Provider value=AuthContext.initialState>
-    <Notification.Provider value=NotificationContext.initialState>
-      <App />
-    </Notification.Provider>
+    <Notification.Provider> <App /> </Notification.Provider>
   </Auth.Provider>;
 };

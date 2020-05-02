@@ -67,7 +67,6 @@ let make = () => {
     </div>
     {switch (surveys.response) {
      | Data(data) =>
-       Js.log(data);
        let forms = data##forms##forms;
        let formsLength = forms->Array.length === 0 ? 1 : forms->Array.length;
        let total = data##forms##totalForms;
@@ -102,7 +101,7 @@ let make = () => {
                     <td className={td(W1_6)}> <Text> {s##_id} </Text> </td>
                     <td className={td(W1_12)}> <Text> {s##title} </Text> </td>
                     <td className={td(W1_12)}>
-                      <Text> {s##content} </Text>
+                      <Text> {s##content->Option.getWithDefault("-")} </Text>
                     </td>
                     <td className={td(W1_12)}>
                       <Text> {s##createdAt->formatDate} </Text>
@@ -111,7 +110,11 @@ let make = () => {
                       <Text> {s##updatedAt->formatDate} </Text>
                     </td>
                     <td className={td(W1_12)}>
-                      <Text> {s##creator##name} </Text>
+                      <Text>
+                        {s##creator
+                         ->Option.map(c => c##name)
+                         ->Option.getWithDefault("-")}
+                      </Text>
                     </td>
                     <td className={td(W1_12)}>
                       <div

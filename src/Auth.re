@@ -22,8 +22,6 @@ module Provider = {
 
     React.useEffect1(
       () => {
-        Js.log2("Time to save token", auth.token);
-
         switch (auth.token, url.path) {
         | (Some(token), ["login"]) =>
           Dom.Storage.setItem("token", token, Dom.Storage.localStorage);

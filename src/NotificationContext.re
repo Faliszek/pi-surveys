@@ -1,20 +1,18 @@
-type notificationType = [ | `success];
+type messageType = [ | `success | `error];
 
-type t = {success: string => React.element};
-
-let initialState = {
-  success: message => {
-    Webapi.Dom.Document.querySelector("#messages", Webapi.Dom.document)
-    ->Belt.Option.map(el => {
-        Js.log2(el, message);
-
-        ReactDOMRe.createPortal(message->React.string, el);
-      })
-    ->Belt.Option.getWithDefault(React.null);
-  },
+type notification = {
+  id: float,
+  message: React.element,
+  type_: messageType,
 };
 
-/** ContextProvider.re */
+type t = {
+  show: (messageType, string) => unit,
+  notifications: array(notification),
+};
+
+let initialState = {show: (_, _) => (), notifications: [||]};
+
 let context = React.createContext(initialState);
 
 let makeProps = (~value, ~children, ()) => {

@@ -1,33 +1,32 @@
 open Belt;
-open Survey;
 
 let _ = [%bs.raw {|require('./index.css')|}];
 
-let setValue = (questions: array(Question.t), value, id) =>
+let setValue = (questions: array(Survey.Question.t), value, id) =>
   questions->Array.map(q => q.id === id ? {...q, value} : q);
 
-let remove = (questions: array(Question.t), id) =>
+let remove = (questions: array(Survey.Question.t), id) =>
   questions->Array.keep(q => q.id !== id);
 
 //TO SERVER
-let toFormType = (t: Question.type_) =>
+let toFormType = (t: Survey.Question.type_) =>
   switch (t) {
   | Open => "Open"
   | Closed(_) => "Closed"
   | Rate(_) => "Rate"
   };
 
-let toAnswer = (a: Answer.t) =>
+let toAnswer = (a: Survey.Answer.t) =>
   Some({"answer": Some(a.value), "id": Some(a.id)});
 
-let toAnswers = (t: Question.type_) =>
+let toAnswers = (t: Survey.Question.type_) =>
   switch (t) {
   | Open => Some([||])
   | Closed(answers)
   | Rate(answers) => Some(answers->Array.map(toAnswer))
   };
 
-let mapQuestion = (q: Question.t) =>
+let mapQuestion = (q: Survey.Question.t) =>
   Some({
     "question": q.value,
     "formType": toFormType(q.type_),
@@ -37,11 +36,18 @@ let mapQuestion = (q: Question.t) =>
 let mapQuestions = questions => Some(questions->Array.map(mapQuestion));
 
 //FROM SERVER
-let fromAnswer: 'a => Answer.t =
+let fromAnswer: 'a => Survey.Answer.t =
   a => {
     value: a->Option.flatMap(a => a##answer)->Option.getWithDefault(""),
     id: a->Option.flatMap(a => a##id)->Option.getWithDefault(""),
   };
+
+let fallbackToOpenType = a => {
+  switch (a) {
+  | Some(a) => a
+  | None => "Open"
+  };
+};
 
 let fromType = (s, answers) =>
   Survey.Question.(
@@ -70,7 +76,7 @@ let fromPlaceholder = s =>
   | "Open"
   | _ => Survey.Question.openPlaceholder
   };
-let fromQuestion: 'a => Question.t =
+let fromQuestion: 'a => Survey.Question.t =
   q => {
     id: q##_id,
     value: q##question,
@@ -87,7 +93,7 @@ let make =
       ~setName,
       ~desc,
       ~setDesc,
-      ~questions: array(Question.t),
+      ~questions: array(Survey.Question.t),
       ~setQuestions,
       ~request=?,
       ~fetching,
@@ -180,7 +186,7 @@ let make =
                   }
                   onChangeAnswer={(answerId, v) =>
                     setQuestions(questions =>
-                      Question.changeAnswer(
+                      Survey.Question.changeAnswer(
                         ~questions,
                         ~questionId=q.id,
                         ~answerId,
@@ -190,12 +196,12 @@ let make =
                   }
                   onAddAnswer={() =>
                     setQuestions(questions =>
-                      Question.addAnswer(questions, q.id)
+                      Survey.Question.addAnswer(questions, q.id)
                     )
                   }
                   onDeleteAnswer={answerId =>
                     setQuestions(questions =>
-                      Question.removeAnswer(
+                      Survey.Question.removeAnswer(
                         ~answerId,
                         ~questionId=q.id,
                         questions,
@@ -209,13 +215,14 @@ let make =
          )
        ->React.array}
     </Animation.Presence>
-    <Button onClick={_ => setQuestions(Question.add(_, Open))}>
+    <Button onClick={_ => setQuestions(Survey.Question.add(_, Open))}>
       <Text color=`white> {j|Dodaj pytanie otwarte|j} </Text>
     </Button>
-    <Button onClick={_ => setQuestions(Question.add(_, Closed([||])))}>
+    <Button
+      onClick={_ => setQuestions(Survey.Question.add(_, Closed([||])))}>
       <Text color=`white> {j|Dodaj pytanie zamknięte|j} </Text>
     </Button>
-    <Button onClick={_ => setQuestions(Question.add(_, Rate([||])))}>
+    <Button onClick={_ => setQuestions(Survey.Question.add(_, Rate([||])))}>
       <Text color=`white> {j|Dodaj pytanie z oceną|j} </Text>
     </Button>
   </>;

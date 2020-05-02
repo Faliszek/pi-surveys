@@ -10,11 +10,14 @@ let make = () => {
   let ({fetching, data, error}, signIn) = LoginQuery.use(~email, ~password);
   let {setToken}: AuthContext.t = Auth.use();
 
+  let notification = Notification.use();
+
   React.useEffect1(
     () => {
       let token = data->Option.map(data => data##login##token);
       if (Option.isSome(token)) {
         setToken(token);
+        notification.show(`success, {j|Pomyślnie zalogowano!|j});
       };
       None;
     },
@@ -58,9 +61,8 @@ let make = () => {
           ->make
         }>
         {switch (error) {
-         | Some(error) =>
-           Js.log(error);
-           <Text color=`red> "Niepoprawne dane logowania" </Text>;
+         | Some(_error) =>
+           <Text color=`red> "Niepoprawne dane logowania" </Text>
          | None => React.null
          }}
       </div>

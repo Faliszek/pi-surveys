@@ -44,7 +44,6 @@ let make = () => {
     </div>
     {switch (surveys.response) {
      | Data(data) =>
-       Js.log(data);
        //mocks
        let forms =
          data##forms##forms
@@ -102,7 +101,11 @@ let make = () => {
                       <Text> {s##createdAt->formatDate} </Text>
                     </td>
                     <td className={td(W2_12)}>
-                      <Text> {s##creator##name} </Text>
+                      <Text>
+                        {s##creator
+                         ->Option.map(c => c##name)
+                         ->Option.getWithDefault("-")}
+                      </Text>
                     </td>
                   </tr>
                 )
