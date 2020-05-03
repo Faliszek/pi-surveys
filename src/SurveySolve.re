@@ -133,6 +133,7 @@ module Step = {
           {switch (step) {
            | 1 => <Icons.FileText size=48 color="#90cdf4" />
            | 2 => <Icons.UserCheck size=48 color="#90cdf4" />
+           | 3 => <Icons.CheckCircle size=48 color="#90cdf4" />
            | _ => React.null
            }}
         </div>
@@ -167,83 +168,105 @@ module Step = {
              <Text className=TW.[FontSize(TextXl)] color=`light>
                {j|Bez obaw, wyniki ankiety są anonimowe|j}
              </Text>
+           | 3 =>
+             <Text className=TW.[FontSize(TextXl)] color=`light>
+               {j|Dziękujemy za wypełnienie ankiety!|j}
+             </Text>
            | _ => React.null
            }}
         </div>
       </div>
-      <div className=TW.([Display(Flex), AlignItems(ItemsCenter)]->make)>
-        <div
-          onClick={_ =>
-            switch (step) {
-            | 2 => setStep(1)
-            | _ => ()
-            }
-          }
-          className=TW.(
-            [
-              Padding(P4),
-              Cursor(CursorPointer),
-              BorderRadius(RoundedFull),
-              BackgroundColor(
-                switch (step) {
-                | 2 => BgBlue100
-                | _ => BgGray100
-                },
-              ),
-              Margin(Mx4),
-            ]
-            ->make
-          )>
-          <Icons.ChevronLeft
-            size=36
-            color={step == 1 ? "#edf2f7" : "#90cdf4"}
-          />
-        </div>
-        <div
-          onClick={_ =>
-            switch (step) {
-            | 1 => setStep(2)
-            | _ => ()
-            }
-          }
-          className=TW.(
-            [
-              Padding(P4),
-              Cursor(CursorPointer),
-              BorderRadius(RoundedFull),
-              BackgroundColor(
-                switch (step) {
-                | 1 => BgBlue100
-                | _ => BgGray100
-                },
-              ),
-              Margin(Mx4),
-            ]
-            ->make
-          )>
-          <Icons.ChevronRight
-            size=36
-            color={step == 1 ? "#90cdf4" : "#edf2f7"}
-          />
-        </div>
-      </div>
+      {switch (step) {
+       | 3 => React.null
+       | _ =>
+         <div className=TW.([Display(Flex), AlignItems(ItemsCenter)]->make)>
+           <div
+             onClick={_ =>
+               switch (step) {
+               | 2 => setStep(1)
+               | _ => ()
+               }
+             }
+             className=TW.(
+               [
+                 Padding(P4),
+                 Cursor(CursorPointer),
+                 BorderRadius(RoundedFull),
+                 BackgroundColor(
+                   switch (step) {
+                   | 2 => BgBlue100
+                   | _ => BgGray100
+                   },
+                 ),
+                 Margin(Mx4),
+               ]
+               ->make
+             )>
+             <Icons.ChevronLeft
+               size=36
+               color={step == 1 ? "#edf2f7" : "#90cdf4"}
+             />
+           </div>
+           <div
+             onClick={_ =>
+               switch (step) {
+               | 1 => setStep(2)
+               | _ => ()
+               }
+             }
+             className=TW.(
+               [
+                 Padding(P4),
+                 Cursor(CursorPointer),
+                 BorderRadius(RoundedFull),
+                 BackgroundColor(
+                   switch (step) {
+                   | 1 => BgBlue100
+                   | _ => BgGray100
+                   },
+                 ),
+                 Margin(Mx4),
+               ]
+               ->make
+             )>
+             <Icons.ChevronRight
+               size=36
+               color={step == 1 ? "#90cdf4" : "#edf2f7"}
+             />
+           </div>
+         </div>
+       }}
     </div>;
   };
+};
+
+let getSolution = (~answers, ~name, ~email, ~number) => {
+  let message = Js.Json.stringifyAny(answers)->Option.getWithDefault("{}");
+
+  let key = name ++ email ++ number;
+
+  let crypt = Crypt.SHA512.encrypt(~message, ~key);
+
+  crypt##toString();
 };
 
 [@react.component]
 let make = (~id) => {
   let (data, _) = SurveySingleQuery.use(~id);
 
+  let (solve, solveSurvey) = SurveySolveMutation.use();
+
   let (questions: array(Survey.Question.t), setQuestions) =
     React.useState(() => [||]);
 
   let (allAnswers, setAllAnswers) = React.useReducer(answerReducer, [||]);
 
-  let (step, setStep) = React.useState(() => 2);
+  let (step, setStep) = React.useState(() => 1);
   let (name, setName) = React.useState(() => "");
   let (email, setEmail) = React.useState(() => "");
   let (number, setNumber) = React.useState(() => "");
+
+  let notification = Notification.use();
 
   React.useEffect1(
     () => {
@@ -259,6 +282,7 @@ let make = (~id) => {
     [|data|],
   );
 
+  Js.log(id);
   <Layout padding=`big>
     <Step
       step
@@ -353,9 +377,45 @@ let make = (~id) => {
                onChange={v => setNumber(_ => v)}
              />
            </div>
-           <div>
-             <Button onClick={_ => ()}>
-               <Text color=`white> {j|Wyślij|j} </Text>
+           <div
+             className=TW.(
+               [
+                 Display(Flex),
+                 AlignItems(ItemsCenter),
+                 JustifyContent(JustifyCenter),
+               ]
+               ->make
+             )>
+             <Button
+               onClick={_ =>
+                 solveSurvey(
+                   ~solutionInput={
+                     "name": name,
+                     "email": email,
+                     "number": number,
+                     "surveyId": id,
+                     "solution":
+                       getSolution(
+                         ~answers=allAnswers,
+                         ~email,
+                         ~number,
+                         ~name,
+                       ),
+                   },
+                   (),
+                 )
+                 |> Js.Promise.then_(_ => {
+                      setStep(_ => 3);
+                      notification.show(
+                        `success,
+                        {j|Pomyślnie wysłano ankietę!|j},
+                      );
+                      Js.Promise.resolve();
+                    })
+                 |> ignore
+               }
+               loading={solve.fetching}>
+               <Text color=`white> {j|WYŚLIJ|j} </Text>
              </Button>
            </div>
          </div>

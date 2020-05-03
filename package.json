@@ -13,6 +13,7 @@
   "dependencies": {
     "bs-fetch": "^0.5.2",
     "bs-webapi": "^0.15.9",
+    "crypto-js": "^4.0.0",
     "framer-motion": "^1.10.3",
     "re-tailwind": "^0.0.9",
     "react": "^16.13.1",

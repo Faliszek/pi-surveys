@@ -11,7 +11,8 @@ module Results = {
 
 module CheckCircle = {
   [@react.component] [@bs.module "react-feather"]
-  external make: (~color: string=?) => React.element = "CheckCircle";
+  external make: (~color: string=?, ~size: int=?) => React.element =
+    "CheckCircle";
 };
 
 module XCircle = {
