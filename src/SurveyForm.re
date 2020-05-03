@@ -86,6 +86,23 @@ let fromQuestion: 'a => Survey.Question.t =
 
 let fromQuestions = questions => questions->Array.map(fromQuestion);
 
+module Solving = {
+  type answer = {
+    question: Survey.Question.t,
+    answer: option(Survey.Answer.t),
+  };
+
+  let answersFromquestions = (questions: array(Survey.Question.t)) => {
+    questions->Array.map(q =>
+      switch (q.type_) {
+      | Open => {question: q, answer: Some(Survey.Answer.make())}
+      | Rate(_)
+      | Closed(_) => {question: q, answer: None}
+      }
+    );
+  };
+};
+
 [@react.component]
 let make =
     (
@@ -98,6 +115,12 @@ let make =
       ~request=?,
       ~fetching,
     ) => {
+  let notification = Notification.use();
+
+  React.useEffect0(() => {
+    Survey.copyToClipboard(~id="asd");
+    None;
+  });
   <>
     <div
       className={
@@ -130,6 +153,10 @@ let make =
                r()
                |> Js.Promise.then_(_ => {
                     ReasonReactRouter.push("/surveys");
+                    notification.show(
+                      `success,
+                      {j|Operacja zakończona pomyślnie!|j},
+                    );
                     Js.Promise.resolve();
                   })
                |> ignore
@@ -155,7 +182,7 @@ let make =
     <Animation.Presence>
       {questions
        ->Array.mapWithIndex((index, q) =>
-           <div>
+           <div key={q.id}>
              {switch (q.type_) {
               | Open =>
                 <OpenQuestion

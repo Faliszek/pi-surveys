@@ -8,9 +8,9 @@ let make = (~onClick, ~children, ~type_=`primary, ~loading=false) => {
     switch (type_) {
     | `primary => [
         BorderRadius(RoundedLg),
-        BackgroundColor(BgBlue600),
+        BackgroundColor(BgBlue400),
         TextColor(TextWhite),
-        BackgroundColor(HoverBgBlue800),
+        BackgroundColor(HoverBgBlue500),
         Padding(Px4),
         Padding(Py3),
         TextColor(TextWhite),

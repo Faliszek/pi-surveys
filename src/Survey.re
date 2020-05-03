@@ -40,6 +40,13 @@ module Answer = {
     answers->Array.map(a => a.id === answerId ? {...a, value} : a);
 };
 
+[@bs.scope "document"] [@bs.val] external body: Dom.element = "body";
+// [@bs.scope "document"] [@bs.val] external body: Dom.element = "body";
+
+let copyToClipboard = (~id) => {
+  //TODO:
+};
+
 module Question = {
   type type_ =
     | Open

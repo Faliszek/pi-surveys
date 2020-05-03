@@ -83,21 +83,21 @@ let make = () => {
              ]
              ->make
            }>
-           <thead>
-             <th className={th()}> <Text> {j|ID|j} </Text> </th>
-             <th className={th()}> <Text> {j|Tytuł|j} </Text> </th>
-             <th className={th()}> <Text> {j|Krótki opis|j} </Text> </th>
-             <th className={th()}> <Text> {j|Utworzona|j} </Text> </th>
-             <th className={th()}>
-               <Text> {j|Ostatnia modyfikacja|j} </Text>
-             </th>
-             <th className={th()}> <Text> {j|Autor|j} </Text> </th>
-             <th className={th()}> <Text> {j|Akcje|j} </Text> </th>
-           </thead>
            <tbody>
+             <tr>
+               <th className={th()}> <Text> {j|ID|j} </Text> </th>
+               <th className={th()}> <Text> {j|Tytuł|j} </Text> </th>
+               <th className={th()}> <Text> {j|Krótki opis|j} </Text> </th>
+               <th className={th()}> <Text> {j|Utworzona|j} </Text> </th>
+               <th className={th()}>
+                 <Text> {j|Ostatnia modyfikacja|j} </Text>
+               </th>
+               <th className={th()}> <Text> {j|Autor|j} </Text> </th>
+               <th className={th()}> <Text> {j|Akcje|j} </Text> </th>
+             </tr>
              {forms
               ->Belt.Array.map(s =>
-                  <tr className={[Cursor(CursorPointer)]->make}>
+                  <tr key={s##_id} className={[Cursor(CursorPointer)]->make}>
                     <td className={td(W1_6)}> <Text> {s##_id} </Text> </td>
                     <td className={td(W1_12)}> <Text> {s##title} </Text> </td>
                     <td className={td(W1_12)}>
@@ -146,6 +146,7 @@ let make = () => {
            {Array.range(1, total / formsLength)
             ->Array.map(v =>
                 <div
+                  key={v->Js.Int.toString}
                   className={
                     [
                       Width(W12),

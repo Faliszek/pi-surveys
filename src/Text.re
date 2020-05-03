@@ -6,6 +6,7 @@ let make = (~children, ~className=?, ~color=`gray, ~onClick=_ => ()) => {
   let color =
     switch (color) {
     | `gray => TextColor(TextGray600)
+    | `light => TextColor(TextGray500)
     | `white => TextColor(TextWhite)
     | `red => TextColor(TextRed600)
     | `blue => TextColor(TextBlue600)

@@ -73,7 +73,11 @@ module SignOut = {
 };
 
 [@react.component]
-let make = (~children) =>
+let make = (~children, ~padding=`medium) => {
+  let {token}: AuthContext.t = Auth.use();
+
+  let loggedIn = Belt.Option.isSome(token);
+
   <div
     className={
       [
@@ -121,35 +125,54 @@ let make = (~children) =>
             "UP Ankiety"
           </Text>
         </div>
-        <SignOut />
+        {loggedIn ? <SignOut /> : React.null}
       </div>
     </div>
     <main className={[Width(WFull), Flex(Flex1), Display(Flex)]->make}>
-      <nav
-        className={
-          [
-            Width(W64),
-            Padding(Py8),
-            BackgroundColor(BgWhite),
-            BoxShadow(ShadowXl),
-          ]
-          ->make
-        }>
-        <ul>
-          <MenuItem
-            onClick={_ => ReasonReactRouter.push("/surveys")}
-            icon=`survey
-            text="Ankiety"
-          />
-          <MenuItem
-            onClick={_ => ReasonReactRouter.push("/results")}
-            icon=`result
-            text="Wyniki"
-          />
-        </ul>
-      </nav>
+      {loggedIn
+         ? <nav
+             className={
+               [
+                 Width(W64),
+                 Padding(Py8),
+                 BackgroundColor(BgWhite),
+                 BoxShadow(ShadowXl),
+               ]
+               ->make
+             }>
+             <ul>
+               <MenuItem
+                 onClick={_ => ReasonReactRouter.push("/")}
+                 icon=`survey
+                 text="Ankiety"
+               />
+               <MenuItem
+                 onClick={_ => ReasonReactRouter.push("/results")}
+                 icon=`result
+                 text="Wyniki"
+               />
+             </ul>
+           </nav>
+         : React.null}
       <div className={[Width(WFull)]->make}>
-        <div className={[Padding(Py8), Padding(Px12)]->make}>
+        <div
+          className={
+            [
+              Padding(
+                switch (padding) {
+                | `medium => Py8
+                | `big => Py16
+                },
+              ),
+              Padding(
+                switch (padding) {
+                | `medium => Px12
+                | `big => Px64
+                },
+              ),
+            ]
+            ->make
+          }>
           <div
             className={
               [
@@ -166,3 +189,4 @@ let make = (~children) =>
       </div>
     </main>
   </div>;
+};

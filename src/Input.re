@@ -17,7 +17,6 @@ module Textarea = {
           BorderColor(BorderGray300),
           Padding(Px4),
           Padding(Py1),
-          Margin(M1),
           BoxShadow(ShadowMd),
           Height(H10),
         ]

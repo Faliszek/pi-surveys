@@ -1,8 +1,6 @@
-open Survey;
-
 [@react.component]
 let make = () => {
-  let (questions: array(Question.t), setQuestions) =
+  let (questions: array(Survey.Question.t), setQuestions) =
     React.useState(() => [||]);
   let (name, setName) = React.useState(() => "");
 

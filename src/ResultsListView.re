@@ -89,6 +89,7 @@ let make = () => {
              {forms
               ->Belt.Array.map(s =>
                   <tr
+                    key={s##_id}
                     className={
                       (s##solved ? [BackgroundColor(BgGreen100)] : [])->make
                     }>
@@ -116,6 +117,7 @@ let make = () => {
            {Array.range(1, total / formsLength)
             ->Array.map(v =>
                 <div
+                  key={v->Js.Int.toString}
                   className={
                     [
                       Width(W12),

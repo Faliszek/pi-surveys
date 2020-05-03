@@ -1,6 +1,7 @@
 module FileText = {
   [@react.component] [@bs.module "react-feather"]
-  external make: (~color: string=?) => React.element = "FileText";
+  external make: (~color: string=?, ~size: int=?) => React.element =
+    "FileText";
 };
 
 module Results = {
@@ -21,6 +22,24 @@ module XCircle = {
 module Circle = {
   [@react.component] [@bs.module "react-feather"]
   external make: (~color: string=?) => React.element = "Circle";
+};
+
+module ChevronRight = {
+  [@react.component] [@bs.module "react-feather"]
+  external make: (~color: string=?, ~size: int=?) => React.element =
+    "ChevronRight";
+};
+
+module ChevronLeft = {
+  [@react.component] [@bs.module "react-feather"]
+  external make: (~color: string=?, ~size: int=?) => React.element =
+    "ChevronLeft";
+};
+
+module UserCheck = {
+  [@react.component] [@bs.module "react-feather"]
+  external make: (~color: string=?, ~size: int=?) => React.element =
+    "UserCheck";
 };
 
 module LogOut = {

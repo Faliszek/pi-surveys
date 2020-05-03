@@ -22,12 +22,11 @@ module Provider = {
 
     React.useEffect1(
       () => {
-        switch (auth.token, url.path) {
-        | (Some(token), ["login"]) =>
-          Dom.Storage.setItem("token", token, Dom.Storage.localStorage);
-          ReasonReactRouter.push("/");
-
-        | _ => ()
+        Js.log(auth.token);
+        switch (auth.token) {
+        | Some(token) =>
+          Dom.Storage.setItem("token", token, Dom.Storage.localStorage)
+        | None => Dom.Storage.removeItem("token", Dom.Storage.localStorage)
         };
 
         None;
