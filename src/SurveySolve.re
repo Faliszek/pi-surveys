@@ -261,7 +261,14 @@ let make = (~id) => {
 
   let (allAnswers, setAllAnswers) = React.useReducer(answerReducer, [||]);
 
-  let (step, setStep) = React.useState(() => 1);
+  let (step, setStep) =
+    React.useState(() =>
+      switch (Dom.Storage.getItem(id, Dom.Storage.localStorage)) {
+      | Some(_) => 3
+      | _ => 1
+      }
+    );
+
   let (name, setName) = React.useState(() => "");
   let (email, setEmail) = React.useState(() => "");
   let (number, setNumber) = React.useState(() => "");
@@ -406,6 +413,16 @@ let make = (~id) => {
                  )
                  |> Js.Promise.then_(_ => {
                       setStep(_ => 3);
+                      Dom.Storage.setItem(
+                        id,
+                        getSolution(
+                          ~answers=allAnswers,
+                          ~email,
+                          ~number,
+                          ~name,
+                        ),
+                        Dom.Storage.localStorage,
+                      );
                       notification.show(
                         `success,
                         {j|Pomyślnie wysłano ankietę!|j},

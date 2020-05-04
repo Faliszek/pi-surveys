@@ -48,6 +48,9 @@ let make = (~onClick, ~children, ~type_=`primary, ~loading=false) => {
         FontSize(TextBase),
         BoxShadow(ShadowMd),
         BoxShadow(HoverShadowLg),
+        Display(Flex),
+        AlignItems(ItemsCenter),
+        JustifyContent(JustifyAround),
         ...styles,
       ]
       ->make

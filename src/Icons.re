@@ -43,6 +43,16 @@ module UserCheck = {
     "UserCheck";
 };
 
+module Search = {
+  [@react.component] [@bs.module "react-feather"]
+  external make: (~color: string=?, ~size: int=?) => React.element = "Search";
+};
+
+module Slash = {
+  [@react.component] [@bs.module "react-feather"]
+  external make: (~color: string=?, ~size: int=?) => React.element = "Slash";
+};
+
 module LogOut = {
   [@react.component] [@bs.module "react-feather"]
   external make: (~color: string=?) => React.element = "LogOut";

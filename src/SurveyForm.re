@@ -117,10 +117,6 @@ let make =
     ) => {
   let notification = Notification.use();
 
-  React.useEffect0(() => {
-    Survey.copyToClipboard(~id="asd");
-    None;
-  });
   <>
     <div
       className={

@@ -7,6 +7,7 @@ module List = [%graphql
             name
             email
             number
+            surveyId
         }
         total
       }
@@ -14,8 +15,9 @@ module List = [%graphql
   |}
 ];
 
-let use = (~page, ~name=?, ~email=?, ~number=?, ~surveyId=?, ()) =>
+let use = (~page, ~name, ~email, ~number, ~surveyId) => {
   ReasonUrql.Hooks.useQuery(
     ~request=List.make(~page, ~name?, ~email?, ~number?, ~surveyId?, ()),
     (),
   );
+};
