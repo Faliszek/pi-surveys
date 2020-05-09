@@ -101,6 +101,26 @@ module Solving = {
       }
     );
   };
+
+  //to save form
+
+  let answersToRequest = answers => {
+    answers->Array.map(a =>
+      Some({
+        "formType": a.question.type_->toFormType,
+        "question": a.question.value,
+        "answers":
+          Some([|
+            Some(
+              Survey.Answer.{
+                "id": a.answer->Option.map(a => a.id),
+                "answer": a.answer->Option.map(a => a.value),
+              },
+            ),
+          |]),
+      })
+    );
+  };
 };
 
 [@react.component]

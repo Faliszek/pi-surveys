@@ -9,6 +9,7 @@ module MenuItem = {
 
     let active =
       switch (url.path, icon) {
+      | (["surveys", _, _], `survey) => true
       | ([] | ["surveys"] | ["create-survey"] | ["surveys", _], `survey) =>
         true
       | (["results"], `result) => true

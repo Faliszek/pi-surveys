@@ -41,6 +41,7 @@ module App = {
     Js.log2(Option.isSome(token), url.path);
     <ReasonUrql.Provider value=client>
       {switch (Option.isSome(token), url.path) {
+       | (true, ["surveys", id, "answers"]) => <SurveyAnswers id />
        | (false, ["surveys", id]) => <SurveySolve id />
        | (false, _) => <LoginView />
 

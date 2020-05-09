@@ -8,6 +8,19 @@ module Solve = [%graphql
   |}
 ];
 
+module AddSolution = [%graphql
+  {|
+    mutation UpdateForm($formInput: FormInputData) {
+      saveForm( formInput: $formInput) {
+        _id
+      }
+    }
+  |}
+];
+
+let useAdd = () =>
+  ReasonUrql.Hooks.useDynamicMutation(AddSolution.definition);
+
 let use = () => {
   ReasonUrql.Hooks.useDynamicMutation(Solve.definition);
 };

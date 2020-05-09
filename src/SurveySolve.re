@@ -255,6 +255,7 @@ let make = (~id) => {
   let (data, _) = SurveySingleQuery.use(~id);
 
   let (solve, solveSurvey) = SurveySolveMutation.use();
+  let (add, addSolution) = SurveySolveMutation.useAdd();
 
   let (questions: array(Survey.Question.t), setQuestions) =
     React.useState(() => [||]);
@@ -289,25 +290,20 @@ let make = (~id) => {
     [|data|],
   );
 
+  let title =
+    data.data->Option.map(d => d##form##title)->Option.getWithDefault("");
+  let subtitle =
+    data.data
+    ->Option.flatMap(d => d##form##content)
+    ->Option.getWithDefault("");
   Js.log(id);
   <Layout padding=`big>
-    <Step
-      step
-      setStep={s => setStep(_ => s)}
-      title={
-        data.data->Option.map(d => d##form##title)->Option.getWithDefault("")
-      }
-      subtitle={
-        data.data
-        ->Option.flatMap(d => d##form##content)
-        ->Option.getWithDefault("")
-      }
-    />
+    <Step step setStep={s => setStep(_ => s)} title subtitle />
     <div className={TW.[Margin(My8), Margin(Mx8)]->TW.make}>
       {switch (step) {
        | 1 =>
          switch (data.response) {
-         | Data(_) =>
+         | Data(data) =>
            questions
            ->Array.map(q =>
                switch (q.type_) {
@@ -413,6 +409,7 @@ let make = (~id) => {
                  )
                  |> Js.Promise.then_(_ => {
                       setStep(_ => 3);
+
                       Dom.Storage.setItem(
                         id,
                         getSolution(
@@ -427,7 +424,18 @@ let make = (~id) => {
                         `success,
                         {j|Pomyślnie wysłano ankietę!|j},
                       );
-                      Js.Promise.resolve();
+                      addSolution(
+                        ~formInput={
+                          "title": title,
+                          "questions":
+                            Some(
+                              allAnswers->SurveyForm.Solving.answersToRequest,
+                            ),
+                          "parentId": Some(id),
+                          "content": subtitle,
+                        },
+                        (),
+                      );
                     })
                  |> ignore
                }

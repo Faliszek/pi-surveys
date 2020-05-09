@@ -132,7 +132,18 @@ let make = () => {
                             let id = s##_id;
                             ReasonReactRouter.push({j|/surveys/$id|j});
                           }}>
-                          {j|Szczegóły|j}
+                          {j|Edytuj|j}
+                        </Text>
+                        <Text
+                          color=`blue
+                          onClick={_ => {
+                            let id = s##_id;
+                            ReasonReactRouter.push(
+                              {j|/surveys/$id/answers|j},
+                            );
+                          }}
+                          className=TW.[Margin(Mx8)]>
+                          {j|Zobacz odpowiedzi|j}
                         </Text>
                         <Delete id=s##_id refetch={() => executeQuery()} />
                       </div>
