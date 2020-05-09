@@ -18,6 +18,7 @@ let make = () => {
       if (Option.isSome(token)) {
         setToken(token);
         notification.show(`success, {j|Pomyślnie zalogowano!|j});
+        ReasonReactRouter.push("/");
       };
       None;
     },

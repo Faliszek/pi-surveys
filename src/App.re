@@ -34,25 +34,27 @@ module App = {
       () => {
         let client = makeClient(~token);
         setClient(_ => client);
-        // Js.log2("update new client", client);
         None;
       },
       [|token|],
     );
-    Js.log(Option.isSome(token));
+    Js.log2(Option.isSome(token), url.path);
     <ReasonUrql.Provider value=client>
       {switch (Option.isSome(token), url.path) {
        | (false, ["surveys", id]) => <SurveySolve id />
        | (false, _) => <LoginView />
-       | (true, ["login"]) => <SurveyListView />
+
+       | (true, ["login"])
+       | (true, ["surveys"])
+       | (true, []) => <SurveyListView />
 
        | (_, ["create-survey"]) => <SurveyCreate />
 
        | (true, ["surveys", id]) => <SurveySingleView id />
-       | (true, []) => <SurveyListView />
 
        | (true, ["results"]) => <ResultsListView />
-       | _ => React.null
+       | (true, _) => <SurveyListView />
+       | _ => "No match"->React.string
        }}
     </ReasonUrql.Provider>;
   };

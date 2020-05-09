@@ -12,6 +12,8 @@ let makeId: unit => string = [%bs.raw
 |}
 ];
 
+let generateHash = makeId;
+
 module Answer = {
   type t = {
     id: string,

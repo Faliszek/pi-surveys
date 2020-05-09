@@ -243,7 +243,7 @@ module Step = {
 let getSolution = (~answers, ~name, ~email, ~number) => {
   let message = Js.Json.stringifyAny(answers)->Option.getWithDefault("{}");
 
-  let key = name ++ email ++ number;
+  let key = name ++ email ++ number ++ Survey.generateHash();
 
   let crypt = Crypt.SHA512.encrypt(~message, ~key);
 
