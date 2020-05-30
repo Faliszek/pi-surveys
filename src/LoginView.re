@@ -25,7 +25,13 @@ let make = () => {
     [|data|],
   );
 
-  <div className={[Display(Flex), MinHeight(MinHScreen)]->make}>
+  <form
+    className={[Display(Flex), MinHeight(MinHScreen)]->make}
+    onSubmit={e => {
+      e->ReactEvent.Form.preventDefault;
+
+      signIn();
+    }}>
     <div
       className={
         [
@@ -67,11 +73,11 @@ let make = () => {
          | None => React.null
          }}
       </div>
-      <Button loading=fetching onClick={_ => signIn()}>
+      <Button loading=fetching htmlType="submit" onClick={_ => ()}>
         <Text color=`white>
           {fetching ? {j|Logowanie|j} : {j|Zaloguj się|j}}
         </Text>
       </Button>
     </div>
-  </div>;
+  </form>;
 };

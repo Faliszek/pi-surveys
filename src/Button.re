@@ -3,7 +3,7 @@ open TW;
 let style = ReactDOMRe.Style.make(~transition="0.2s all", ());
 
 [@react.component]
-let make = (~onClick, ~children, ~type_=`primary, ~loading=false) => {
+let make = (~onClick, ~children, ~type_=`primary, ~loading=false, ~htmlType=?) => {
   let styles =
     switch (type_) {
     | `primary => [
@@ -40,6 +40,7 @@ let make = (~onClick, ~children, ~type_=`primary, ~loading=false) => {
       ]
     };
   <button
+    type_={htmlType->Belt.Option.getWithDefault("")}
     onClick
     style
     className={

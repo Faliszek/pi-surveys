@@ -98,7 +98,7 @@ module Provider = {
                     key={m.id->Js.Float.toString}
                     type_={m.type_}
                     message={m.message}
-                    time=2000
+                    time=10000
                     onDestroy={() => dispatch(`destory(m.id))}
                   />
                 )

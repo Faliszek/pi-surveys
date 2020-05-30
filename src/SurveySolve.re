@@ -172,6 +172,7 @@ module Step = {
              <Text className=TW.[FontSize(TextXl)] color=`light>
                {j|Dziękujemy za wypełnienie ankiety!|j}
              </Text>
+
            | _ => React.null
            }}
         </div>
@@ -261,10 +262,11 @@ let make = (~id) => {
     React.useState(() => [||]);
 
   let (allAnswers, setAllAnswers) = React.useReducer(answerReducer, [||]);
+  let solution = Dom.Storage.getItem(id, Dom.Storage.localStorage);
 
   let (step, setStep) =
     React.useState(() =>
-      switch (Dom.Storage.getItem(id, Dom.Storage.localStorage)) {
+      switch (solution) {
       | Some(_) => 3
       | _ => 1
       }
@@ -296,7 +298,7 @@ let make = (~id) => {
     data.data
     ->Option.flatMap(d => d##form##content)
     ->Option.getWithDefault("");
-  Js.log(id);
+
   <Layout padding=`big>
     <Step step setStep={s => setStep(_ => s)} title subtitle />
     <div className={TW.[Margin(My8), Margin(Mx8)]->TW.make}>
@@ -390,36 +392,27 @@ let make = (~id) => {
                ->make
              )>
              <Button
-               onClick={_ =>
+               onClick={_ => {
+                 let solution =
+                   getSolution(~answers=allAnswers, ~email, ~number, ~name);
                  solveSurvey(
                    ~solutionInput={
                      "name": name,
                      "email": email,
                      "number": number,
                      "surveyId": id,
-                     "solution":
-                       getSolution(
-                         ~answers=allAnswers,
-                         ~email,
-                         ~number,
-                         ~name,
-                       ),
+                     "solution": solution,
                    },
                    (),
                  )
                  |> Js.Promise.then_(_ => {
-                      setStep(_ => 3);
-
                       Dom.Storage.setItem(
                         id,
-                        getSolution(
-                          ~answers=allAnswers,
-                          ~email,
-                          ~number,
-                          ~name,
-                        ),
+                        solution,
                         Dom.Storage.localStorage,
                       );
+                      setStep(_ => 3);
+
                       notification.show(
                         `success,
                         {j|Pomyślnie wysłano ankietę!|j},
@@ -437,12 +430,61 @@ let make = (~id) => {
                         (),
                       );
                     })
-                 |> ignore
-               }
+                 |> ignore;
+               }}
                loading={solve.fetching}>
                <Text color=`white> {j|WYŚLIJ|j} </Text>
              </Button>
            </div>
+         </div>
+       | 3 =>
+         <div>
+           <Text className=TW.[FontSize(TextSm)] color=`light>
+             {j|Poniżej znajdziesz swój kod ankiety, proszę zachowaj go w bezpiecznym miejscu,|j}
+           </Text>
+           <br />
+           <Text className=TW.[FontSize(TextSm)] color=`light>
+             {j|kod ten aby zapewnić ci 100% anonimowość nie będzie nigdzie przechowywany, będzie Ci on potrzebny,|j}
+           </Text>
+           <br />
+           <Text className=TW.[FontSize(TextSm)] color=`light>
+             {j| jeśli będziesz chciał sprawdzić rozwiązanie swojej ankiety na innym urządzeniu|j}
+           </Text>
+           <br />
+           <br />
+           <Text
+             className=TW.[FontSize(TextSm), FontWeight(FontBold)]
+             color=`light>
+             {j|UWAGA!|j}
+           </Text>
+           <Text className=TW.[FontSize(TextSm)] color=`light>
+             {j| W celach bezpieczeństwa pokazujemy tylko część kodu, aby pobrać cały kod kliknij w przycisk,|j}
+           </Text>
+           <Text
+             color=`light
+             className=TW.[FontSize(TextSm), FontWeight(FontBold)]>
+             {j| SKOPIUJ|j}
+           </Text>
+           <br />
+           <br />
+           <Text
+             className=TW.[FontSize(TextLg), WordBreak(BreakAll)]
+             color=`light>
+             {solution
+              ->Option.map(s =>
+                  Js.String.slice(~from=0, ~to_=32, s) ++ " ..."
+                )
+              ->Option.getWithDefault("")}
+           </Text>
+           <br />
+           <br />
+           <Button
+             onClick={_ => {
+               Survey.copyToClipboard(solution) |> ignore;
+               notification.show(`success, {j|Skopiowano kod!|j});
+             }}>
+             <Text color=`white> {j|SKOPIUJ|j} </Text>
+           </Button>
          </div>
        | _ => React.null
        }}

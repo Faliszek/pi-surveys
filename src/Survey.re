@@ -45,9 +45,17 @@ module Answer = {
 [@bs.scope "document"] [@bs.val] external body: Dom.element = "body";
 // [@bs.scope "document"] [@bs.val] external body: Dom.element = "body";
 
-let copyToClipboard = (~id) => {
-  //TODO:
-};
+let copyToClipboard = [%bs.raw
+  {j|
+function myFunction(text) {
+  var copyText = document.getElementById("copy-input");
+  copyText.setAttribute("value", text);
+  copyText.select();
+  copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+  document.execCommand("copy");
+}
+|j}
+];
 
 module Question = {
   type type_ =
