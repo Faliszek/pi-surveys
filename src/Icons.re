@@ -57,3 +57,9 @@ module LogOut = {
   [@react.component] [@bs.module "react-feather"]
   external make: (~color: string=?) => React.element = "LogOut";
 };
+
+module QuestionMark = {
+  [@react.component] [@bs.module "react-feather"]
+  external make: (~color: string=?, ~size: int=?) => React.element =
+    "HelpCircle";
+};

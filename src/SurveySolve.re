@@ -105,7 +105,8 @@ let answerReducer = (state: array(SurveyForm.Solving.answer), action) => {
 
 module Step = {
   [@react.component]
-  let make = (~title, ~subtitle, ~step, ~setStep) => {
+  let make = (~title, ~subtitle, ~step, ~setStep, ~checked) => {
+    Js.log(step);
     <div
       className=TW.(
         [
@@ -131,6 +132,7 @@ module Step = {
             ->make
           )>
           {switch (step) {
+           | 0 => <Icons.QuestionMark size=48 color="#90cdf4" />
            | 1 => <Icons.FileText size=48 color="#90cdf4" />
            | 2 => <Icons.UserCheck size=48 color="#90cdf4" />
            | 3 => <Icons.CheckCircle size=48 color="#90cdf4" />
@@ -140,6 +142,10 @@ module Step = {
         <div className=TW.([Margin(Ml8)]->make)>
           <div>
             {switch (step) {
+             | 0 =>
+               <Text className=TW.[FontSize(Text2xl)]>
+                 {j|Szybkie sprawdzenie: |j}
+               </Text>
              | 1 =>
                <>
                  <Text className=TW.[FontSize(Text2xl)]>
@@ -155,6 +161,10 @@ module Step = {
              }}
           </div>
           {switch (step) {
+           | 0 =>
+             <Text className=TW.[FontSize(TextXl)] color=`light>
+               {j|Sprawdź czy twoja odpowiedź jest w bazie|j}
+             </Text>
            | 1 =>
              <>
                <Text className=TW.[FontSize(TextXl)] color=`light>
@@ -170,7 +180,9 @@ module Step = {
              </Text>
            | 3 =>
              <Text className=TW.[FontSize(TextXl)] color=`light>
-               {j|Dziękujemy za wypełnienie ankiety!|j}
+               {checked
+                  ? {j|Twoja ankieta znajduję się w bazie danych!|j}
+                  : {j|Dziękujemy za wypełnienie ankiety!|j}}
              </Text>
 
            | _ => React.null
@@ -184,6 +196,7 @@ module Step = {
            <div
              onClick={_ =>
                switch (step) {
+               | 1 => setStep(0)
                | 2 => setStep(1)
                | _ => ()
                }
@@ -195,6 +208,7 @@ module Step = {
                  BorderRadius(RoundedFull),
                  BackgroundColor(
                    switch (step) {
+                   | 1
                    | 2 => BgBlue100
                    | _ => BgGray100
                    },
@@ -205,12 +219,18 @@ module Step = {
              )>
              <Icons.ChevronLeft
                size=36
-               color={step == 1 ? "#edf2f7" : "#90cdf4"}
+               color={
+                 switch (step) {
+                 | 0 => "#edf2f7"
+                 | _ => "#90cdf4"
+                 }
+               }
              />
            </div>
            <div
              onClick={_ =>
                switch (step) {
+               | 0 => setStep(1)
                | 1 => setStep(2)
                | _ => ()
                }
@@ -222,6 +242,7 @@ module Step = {
                  BorderRadius(RoundedFull),
                  BackgroundColor(
                    switch (step) {
+                   | 0
                    | 1 => BgBlue100
                    | _ => BgGray100
                    },
@@ -232,7 +253,13 @@ module Step = {
              )>
              <Icons.ChevronRight
                size=36
-               color={step == 1 ? "#90cdf4" : "#edf2f7"}
+               color={
+                 switch (step) {
+                 | 0
+                 | 1 => "#90cdf4"
+                 | _ => "#edf2f7"
+                 }
+               }
              />
            </div>
          </div>
@@ -256,25 +283,33 @@ let make = (~id) => {
   let (data, _) = SurveySingleQuery.use(~id);
 
   let (solve, solveSurvey) = SurveySolveMutation.use();
+
+  let solution = Dom.Storage.getItem(id, Dom.Storage.localStorage);
+
   let (add, addSolution) = SurveySolveMutation.useAdd();
 
   let (questions: array(Survey.Question.t), setQuestions) =
     React.useState(() => [||]);
 
   let (allAnswers, setAllAnswers) = React.useReducer(answerReducer, [||]);
-  let solution = Dom.Storage.getItem(id, Dom.Storage.localStorage);
 
   let (step, setStep) =
     React.useState(() =>
       switch (solution) {
       | Some(_) => 3
-      | _ => 1
+      | _ => 0
       }
     );
 
   let (name, setName) = React.useState(() => "");
   let (email, setEmail) = React.useState(() => "");
   let (number, setNumber) = React.useState(() => "");
+  let (toCheck, setToCheck) = React.useState(() => "");
+  let (checking, setChecking) = React.useState(() => false);
+  let (checked, setChecked) = React.useState(() => true);
+
+  let (solvedSurvey, userSolvedQuery) =
+    UserSolvedSurveyQuery.use(toCheck === "" ? None : Some(toCheck));
 
   let notification = Notification.use();
 
@@ -292,55 +327,150 @@ let make = (~id) => {
     [|data|],
   );
 
+  React.useEffect2(
+    () => {
+      let noSurvey = () =>
+        notification.show(
+          `success,
+          {j|Wygląda na to, że nie rozwiązywałeś ankiety, oto ona!|j},
+        );
+
+      let surveyExist = () =>
+        notification.show(
+          `success,
+          {j|Ankieta znajduję się w bazie danych!|j},
+        );
+
+      Js.log3(solvedSurvey.response, checking, toCheck);
+
+      if (toCheck != "" && checking) {
+        switch (solvedSurvey.response) {
+        | Data(data) =>
+          switch (data) {
+          | data when Option.isSome(data##userSolvedSurvey) =>
+            surveyExist();
+            Dom.Storage.setItem(id, toCheck, Dom.Storage.localStorage);
+            setStep(_ => 3);
+          | _ =>
+            noSurvey();
+            setStep(_ => 1);
+          };
+
+          setChecking(_ => false);
+
+        | _ => ()
+        };
+      };
+      None;
+    },
+    (checking, solvedSurvey.response),
+  );
+
+  React.useEffect1(
+    () => {
+      if (checking) {
+        setChecked(_ => true);
+      };
+      None;
+    },
+    [|checking|],
+  );
+
   let title =
     data.data->Option.map(d => d##form##title)->Option.getWithDefault("");
+
   let subtitle =
     data.data
     ->Option.flatMap(d => d##form##content)
     ->Option.getWithDefault("");
 
   <Layout padding=`big>
-    <Step step setStep={s => setStep(_ => s)} title subtitle />
+    <Step step setStep={s => setStep(_ => s)} title subtitle checked />
     <div className={TW.[Margin(My8), Margin(Mx8)]->TW.make}>
       {switch (step) {
+       | 0 =>
+         <div>
+           <div className={TW.[Margin(Mb8)]->TW.make}>
+             <Text className=TW.[Display(Block), Margin(Mb3)]>
+               {j|Jeśli rozwiązywałeś tą ankiete, możesz wprowadzić kod który otrzymałeś, aby sprawdzić czy twoje rozwiązanie znajduje się w bazie|j}
+             </Text>
+             <div
+               className={
+                 TW.[Margin(My8), Display(Flex), AlignItems(ItemsCenter)]
+                 ->TW.make
+               }>
+               <Input
+                 value=toCheck
+                 onChange={v => setToCheck(_ => v)}
+                 className=TW.[Margin(Mr4)]
+                 placeholder={j|Wprowadź kod|j}
+               />
+               <Button
+                 onClick={_ => {
+                   userSolvedQuery();
+                   setChecking(_ => true);
+                 }}>
+                 <Text
+                   className=TW.[FontSize(TextSm), FontWeight(FontBold)]
+                   color=`white>
+                   {j|SPRAWDŹ|j}
+                 </Text>
+               </Button>
+             </div>
+             <div>
+               <Text className=TW.[Display(Block), Margin(Mb3)]>
+                 {j|Jeśli natomiast jesteś pewien że nie rozwiązywałeś ankiety kliknij przycisk Dalej|j}
+               </Text>
+               <Button onClick={_ => setStep(_ => 1)}>
+                 <Text
+                   className=TW.[FontSize(TextSm), FontWeight(FontBold)]
+                   color=`white>
+                   {j|DALEJ   ➡|j}
+                 </Text>
+               </Button>
+             </div>
+           </div>
+         </div>
        | 1 =>
          switch (data.response) {
          | Data(data) =>
-           questions
-           ->Array.map(q =>
-               switch (q.type_) {
-               | Open =>
-                 <Open
-                   id={q.id}
-                   text={q.value}
-                   allAnswers
-                   onAnswerChange={v =>
-                     setAllAnswers(ChangeOpenAnswer(q.id, v))
-                   }
-                 />
-               | Rate(answers) =>
-                 <Choice
-                   id={q.id}
-                   text={q.value}
-                   answers
-                   allAnswers
-                   onAnswerChange={answer =>
-                     setAllAnswers(ChangeClosedAnswer(q.id, answer))
-                   }
-                 />
-               | Closed(answers) =>
-                 <Choice
-                   id={q.id}
-                   text={q.value}
-                   answers
-                   allAnswers
-                   onAnswerChange={answer =>
-                     setAllAnswers(ChangeClosedAnswer(q.id, answer))
-                   }
-                 />
-               }
-             )
-           ->React.array
+           <div>
+             {questions
+              ->Array.map(q =>
+                  switch (q.type_) {
+                  | Open =>
+                    <Open
+                      id={q.id}
+                      text={q.value}
+                      allAnswers
+                      onAnswerChange={v =>
+                        setAllAnswers(ChangeOpenAnswer(q.id, v))
+                      }
+                    />
+                  | Rate(answers) =>
+                    <Choice
+                      id={q.id}
+                      text={q.value}
+                      answers
+                      allAnswers
+                      onAnswerChange={answer =>
+                        setAllAnswers(ChangeClosedAnswer(q.id, answer))
+                      }
+                    />
+                  | Closed(answers) =>
+                    <Choice
+                      id={q.id}
+                      text={q.value}
+                      answers
+                      allAnswers
+                      onAnswerChange={answer =>
+                        setAllAnswers(ChangeClosedAnswer(q.id, answer))
+                      }
+                    />
+                  }
+                )
+              ->React.array}
+           </div>
 
          | Error(_) =>
            <Text>
